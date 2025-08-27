@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Farm de Relíquias (Disruption) - Warframe Offline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis CSS para um tema consistente */
+        :root {
+            --cor-fundo-primaria: #0A0A0E;
+            --cor-fundo-secundaria: #1A1A2E;
+            --cor-fundo-card: #2C2C4A;
+            --cor-texto-primaria: #E0E0E0;
+            --cor-texto-secundaria: #A0A0C0;
+            --cor-destaque-warframe: #00FFB0; /* Verde-água neon */
+            --cor-borda-warframe: #008855; /* Verde mais escuro */
+            --cor-botao-primario: #00FFB0;
+            --cor-botao-hover: #00E090;
+            --cor-aviso: #FFD700; /* Dourado */
+            --cor-log: #111115;
+            --cor-log-borda: #33333A;
+            --cor-button-undo: #f39c12; /* Laranja */
+            --cor-button-reset: #888888; /* Cinza */
+        }
+
+        body {
+            font-family: 'Exo', sans-serif;
+            background-color: var(--cor-fundo-primaria);
+            color: var(--cor-texto-primaria);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column; /* Alterado para coluna para alinhar o rodapé */
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
+            min-height: 100vh;
+            /* Fundo com padrão de grade sutil, como Warframe */
+            background-image: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100" y2="100" stroke="%231a1a2e" stroke-width="0.1"/><line x1="100" y1="0" x2="0" y2="100" stroke="%231a1a2e" stroke-width="0.1"/><rect x="0" y="0" width="100" height="100" fill="url(%23grid)"/><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 L 0 10" fill="none" stroke="%231a1a2e" stroke-width="0.1"/></pattern></defs></svg>');
+            background-size: 200px 200px;
+        }
+
+        #overlay {
+            position: relative;
+            top: unset;
+            right: unset;
+            width: 340px;
+            background: var(--cor-fundo-secundaria);
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 14px;
+            z-index: 9999;
+            border: 1px solid var(--cor-borda-warframe);
+            box-shadow: 0 0 20px var(--cor-destaque-warframe);
+            animation: fadeIn 0.8s ease-out;
+            /* Removido margin-top para o novo layout flex */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 4px 0 15px 0;
+            color: var(--cor-destaque-warframe);
+            text-shadow: 0 0 6px rgba(0, 255, 176, 0.6);
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--cor-texto-primaria);
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--cor-borda-warframe);
+            background-color: var(--cor-fundo-card);
+            color: var(--cor-texto-primaria);
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ffb0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-6.5%200-12.3%203.2-16.1%208.1-3.8%204.9-4.5%2011.8-1.7%2017.5l124.9%20165c4.6%206.1%2011.7%209.5%2019.2%209.5s14.6-3.4%2019.2-9.5L287%2095c2.8-5.7%202.1-12.6-1.7-17.5z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 16px auto;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        select:hover, select:focus {
+            border-color: var(--cor-destaque-warframe);
+            box-shadow: 0 0 8px rgba(0, 255, 176, 0.4);
+        }
+        
+        /* Estilo para opções desabilitadas */
+        select option:disabled {
+            color: #777;
+            opacity: 0.6;
+        }
+
+        .round-display {
+            margin: 15px 0 10px 0;
+            padding: 8px;
+            background-color: var(--cor-fundo-card);
+            border: 1px solid var(--cor-borda-warframe);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            color: var(--cor-destaque-warframe);
+            text-shadow: 0 0 4px rgba(0, 255, 176, 0.4);
+        }
+        .round-display strong {
+            color: var(--cor-destaque-warframe);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        button {
+            flex-grow: 1;
+            min-width: 70px;
+            padding: 10px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            color: var(--cor-fundo-secundaria);
+            font-weight: bold;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .button-group button:nth-child(1),
+        .button-group button:nth-child(2),
+        .button-group button:nth-child(3),
+        .button-group button:nth-child(4) {
+            background: var(--cor-botao-primario);
+            color: var(--cor-fundo-primaria);
+        }
+        .button-group button:nth-child(5) {
+            background: var(--cor-button-undo);
+            color: #fff;
+        }
+        .button-group button:nth-child(6) {
+            background: var(--cor-button-reset);
+            color: #fff;
+        }
+
+        #log {
+            margin-top: 15px;
+            height: 120px;
+            overflow-y: auto;
+            background: var(--cor-log);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'monospace';
+            font-size: 12px;
+            border: 1px solid var(--cor-log-borda);
+            color: var(--cor-texto-secundaria);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        #log::-webkit-scrollbar { width: 8px; }
+        #log::-webkit-scrollbar-track { background: var(--cor-log); border-radius: 10px; }
+        #log::-webkit-scrollbar-thumb { background: var(--cor-borda-warframe); border-radius: 10px; }
+        #log::-webkit-scrollbar-thumb:hover { background: var(--cor-destaque-warframe); }
+
+        #hint {
+            margin-top: 15px;
+            padding: 10px 12px;
+            color: var(--cor-destaque-warframe);
+            background-color: rgba(0, 255, 176, 0.15);
+            border-left: 4px solid var(--cor-destaque-warframe);
+            font-weight: 600;
+            border-radius: 8px;
+            text-align: left;
+            box-shadow: 0 0 8px rgba(0, 255, 176, 0.3);
+        }
+        #hint strong {
+            color: var(--cor-texto-primaria);
+        }
+
+        /* --- NOVO ESTILO PARA O RODAPÉ --- */
+        footer {
+            margin-top: 20px; /* Espaçamento acima do rodapé */
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--cor-texto-secundaria); /* Reutiliza uma cor do tema */
+        }
+    </style>
+</head>
+<body>
+<div id="overlay">
+  <h2>// DISRUPTION HELPER V1.0 //</h2>
+  <div>
+    <label for="mission">Selecione a Missão:</label>
+    <select id="mission"></select>
+  </div>
+  <div>
+    <label for="target">Selecione a Relíquia Alvo:</label>
+    <select id="target"></select>
+  </div>
+  <div class="round-display">
+    <strong>Rodada atual: <span id="round">1</span></strong>
+  </div>
+  <div class="button-group">
+    <button onclick="defender(1)">Defendi 1</button>
+    <button onclick="defender(2)">Defendi 2</button>
+    <button onclick="defender(3)">Defendi 3</button>
+    <button onclick="defender(4)">Defendi 4</button>
+    <button onclick="undo()">Desfazer</button>
+    <button onclick="resetar()">Reiniciar</button>
+  </div>
+  <div id="hint"></div>
+  <div id="log"></div>
+</div>
+
+<footer>
+  Feito por XSatoPrimeX#052
+</footer>
+
+
+<script>
+// ---------- ESTADO DA APLICAÇÃO ----------
+let rodada = 1;
+let historico = [];
+
+// ---------- ELEMENTOS DO DOM ----------
+const roundDisplay = document.getElementById("round");
+const logEl = document.getElementById("log");
+const hintEl = document.getElementById("hint");
+const missionSelect = document.getElementById("mission");
+const targetSelect = document.getElementById("target");
+
+// ---------- DADOS E LÓGICA DO JOGO ----------
+const missoes = {
+  "olympus": { 
+    name:"Olympus (Marte)", 
+    rewards: { A: ["Lith"], B: ["Lith"], C: ["Meso"] },
+    relics: ["Lith", "Meso"] // Relíquias que dropam aqui
+  },
+  "ur": { 
+    name:"Ur (Urano)",
+    rewards: { A: ["Meso"], B: ["Neo"], C: ["Neo"] },
+    relics: ["Meso", "Neo"] // Relíquias que dropam aqui
+   },
+  "apollo": { 
+    name:"Apollo (Lua)", 
+    rewards: { A: ["Neo"], B: ["Axi"], C: ["Axi", "Lua Lens"] },
+    relics: ["Neo", "Axi"] // Relíquias que dropam aqui
+  },
+  "ganymede": { 
+    name:"Ganymede (Júpiter)",
+    rewards: { A: ["Meso"], B: ["Neo"], C: ["Axi"] },
+    relics: ["Meso", "Neo", "Axi"] // Relíquias que dropam aqui
+  },
+  "kelpie": { 
+    name:"Kelpie (Sedna)",
+    rewards: { A: ["Meso"], B: ["Neo"], C: ["Axi"] },
+    relics: ["Meso", "Neo", "Axi"] // Relíquias que dropam aqui
+  }
+};
+
+const todasAsReliquias = ["Lith", "Meso", "Neo", "Axi"];
+
+function getRotation(round, conduits) {
+    const perfect = conduits === 4;
+    if (round === 1) return conduits >= 3 ? 'B' : 'A';
+    if (round === 2) return perfect ? 'C' : (conduits >= 3 ? 'B' : 'A');
+    if (round === 3) return perfect ? 'C' : (conduits >= 2 ? 'B' : 'A');
+    return perfect ? 'C' : (conduits >= 1 ? 'B' : 'A');
+}
+
+// ---------- FUNÇÕES DA INTERFACE ----------
+function appendLog(text) {
+  logEl.innerHTML = text + "<br>" + logEl.innerHTML;
+}
+
+function defender(conduites) {
+  const rotation = getRotation(rodada, conduites);
+  const missionKey = missionSelect.value;
+  const currentMission = missoes[missionKey];
+  const possibleRewards = currentMission?.rewards[rotation]?.join(" ou ") || "Desconhecido";
+
+  const logEntry = {
+      rodada: rodada,
+      texto: `Rodada ${rodada}: Defendi ${conduites} → Rotação ${rotation} [${possibleRewards}]`
+  };
+  historico.push(logEntry);
+  appendLog(logEntry.texto);
+
+  rodada++;
+  atualizarUI();
+}
+
+function undo() {
+  if (historico.length === 0) return;
+  historico.pop();
+  logEl.innerHTML = "";
+  historico.slice().reverse().forEach(entry => appendLog(entry.texto));
+  if (rodada > 1) rodada--;
+  atualizarUI();
+}
+
+function resetar() {
+  rodada = 1;
+  historico = [];
+  logEl.innerHTML = "";
+  atualizarUI();
+}
+
+/**
+ * NOVA FUNÇÃO: Atualiza as opções de relíquias com base na missão selecionada.
+ */
+function updateRelicOptions() {
+    const missionKey = missionSelect.value;
+    const availableRelics = missoes[missionKey]?.relics || [];
+    let firstAvailableOption = null;
+
+    // Itera por todas as opções do menu de relíquias
+    for (const option of targetSelect.options) {
+        const relicName = option.value;
+        const isAvailable = availableRelics.includes(relicName);
+        option.disabled = !isAvailable; // Desabilita se não estiver na lista
+
+        // Guarda a primeira opção válida para o caso de a atual ser desabilitada
+        if (isAvailable && !firstAvailableOption) {
+            firstAvailableOption = relicName;
+        }
+    }
+
+    // Se a opção atualmente selecionada foi desabilitada, seleciona a primeira válida
+    const currentSelectedOption = targetSelect.options[targetSelect.selectedIndex];
+    if (currentSelectedOption.disabled && firstAvailableOption) {
+        targetSelect.value = firstAvailableOption;
+    }
+}
+
+function atualizarUI() {
+  roundDisplay.textContent = rodada;
+  const missionKey = missionSelect.value;
+  const alvo = targetSelect.value;
+  let hintText = "";
+
+  if (!missionKey || !alvo) {
+      hintEl.innerHTML = "<strong>Selecione uma missão e uma relíquia alvo</strong> para iniciar o guia.";
+      return;
+  }
+
+  if (missionKey === 'apollo' && alvo === 'Axi') {
+    if (rodada === 1) hintText = `<strong>Rodada 1:</strong> Defenda <strong>3 conduítes</strong> para garantir a Rotação B.`;
+    else if (rodada === 2) hintText = `<strong>Rodada 2:</strong> Defenda <strong>3 conduítes</strong> para avançar para C.`;
+    else if (rodada === 3) hintText = `<strong>Rodada 3:</strong> Defenda <strong>2 conduítes</strong> para voltar à Rotação B.`;
+    else hintText = `<strong>Rodada ${rodada} (Loop Axi):</strong> Defenda <strong>1 ou 2 conduítes</strong> para permanecer na Rotação B (Axi Relics). <em>Evite 4 conduítes para não pegar Lentes!</em>`;
+  } else {
+    hintText = `<strong>Alvo: ${alvo}.</strong> Para maximizar suas chances, defenda <strong>4 conduítes</strong> em cada rodada.`;
+  }
+  
+  hintEl.innerHTML = hintText;
+}
+
+function inicializar() {
+  for (const key in missoes) {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = missoes[key].name;
+    missionSelect.appendChild(option);
+  }
+  for (const r of todasAsReliquias) { // Popula com TODAS as relíquias
+    const option = document.createElement("option");
+    option.value = r;
+    option.textContent = r;
+    targetSelect.appendChild(option);
+  }
+  
+  missionSelect.value = Object.keys(missoes)[0] || "";
+
+  // Adiciona listeners
+  missionSelect.addEventListener('change', () => {
+      updateRelicOptions(); // ATUALIZA as opções de relíquias primeiro
+      resetar(); // DEPOIS reseta a UI com os novos valores
+  });
+  targetSelect.addEventListener('change', resetar);
+
+  // Executa as funções uma vez no início para configurar o estado inicial
+  updateRelicOptions();
+  atualizarUI();
+}
+
+document.addEventListener('DOMContentLoaded', inicializar);
+</script>
+</body>
+</html>
